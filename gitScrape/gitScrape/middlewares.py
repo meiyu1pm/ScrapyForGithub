@@ -9,33 +9,33 @@ from gitScrape.settings import USER_AGENT_LIST
 from scrapy.downloadermiddlewares.useragent import UserAgentMiddleware
 from scrapy import signals
 from scrapy.http import HtmlResponse
-from selenium import webdriver
+# from selenium import webdriver
 # useful for handling different item types with a single interface
 # from itemadapter import is_item, ItemAdapter
 
-class SeleniumMiddleware:
-    def process_request(self, request, spider):
-        # Called for each request that goes through the downloader
-        # middleware.
+# class SeleniumMiddleware:
+#     def process_request(self, request, spider):
+#         # Called for each request that goes through the downloader
+#         # middleware.
 
-        # Must either:
-        # - return None: continue processing this request
-        # - or return a Response object
-        # - or return a Request object
-        # - or raise IgnoreRequest: process_exception() methods of
-        #   installed downloader middleware will be called
+#         # Must either:
+#         # - return None: continue processing this request
+#         # - or return a Response object
+#         # - or return a Request object
+#         # - or raise IgnoreRequest: process_exception() methods of
+#         #   installed downloader middleware will be called
 
-        url = request.url
-        driver = webdriver.Chrome()# '需要时把chromedriver放在同级目录下'
-        driver.get(url)
-        time.sleep(3)
-        data = driver.page_source
-        driver.close()
-        res = HtmlResponse(url=url, body=data, encoding='utf-8', request=request)
-        return res
+#         url = request.url
+#         driver = webdriver.Chrome()# '需要时把chromedriver放在同级目录下'
+#         driver.get(url)
+#         time.sleep(3)
+#         data = driver.page_source
+#         driver.close()
+#         res = HtmlResponse(url=url, body=data, encoding='utf-8', request=request)
+#         return res
 
-    def spider_opened(self, spider):
-        spider.logger.info('Spider opened: %s' % spider.name)
+#     def spider_opened(self, spider):
+#         spider.logger.info('Spider opened: %s' % spider.name)
 
 
 class RandomUserAgentMiddleware(UserAgentMiddleware):
@@ -48,6 +48,7 @@ class RandomUserAgentMiddleware(UserAgentMiddleware):
         # print(ua)
         if ua:
             request.headers.setdefault('User-Agent', ua)
+        # return super().process_request(request, spider)
 
 class GitscrapeSpiderMiddleware:
     # Not all methods need to be defined. If a method is not defined,
