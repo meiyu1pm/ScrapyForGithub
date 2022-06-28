@@ -48,7 +48,6 @@ class RandomUserAgentMiddleware(UserAgentMiddleware):
         # print(ua)
         if ua:
             request.headers.setdefault('User-Agent', ua)
-        # return super().process_request(request, spider)
 
 class GitscrapeSpiderMiddleware:
     # Not all methods need to be defined. If a method is not defined,
