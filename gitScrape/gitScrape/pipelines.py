@@ -10,4 +10,5 @@ from itemadapter import ItemAdapter
 
 class GitscrapePipeline:
     def process_item(self, item, spider):
+        print('item is:', item, '\n')
         return item

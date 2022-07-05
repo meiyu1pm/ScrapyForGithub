@@ -4,15 +4,17 @@
 # https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
 import random
-import time
-from gitScrape.settings import USER_AGENT_LIST
+from gitScrape.settings import USER_AGENT_LIST, PROXY_LIST
 from scrapy.downloadermiddlewares.useragent import UserAgentMiddleware
 from scrapy import signals
-from scrapy.http import HtmlResponse
+# from scrapy.http import HtmlResponse
+from base64 import b64encode
 # from selenium import webdriver
 # useful for handling different item types with a single interface
 # from itemadapter import is_item, ItemAdapter
 
+
+# 添加Selenium中间件后期留用
 # class SeleniumMiddleware:
 #     def process_request(self, request, spider):
 #         # Called for each request that goes through the downloader
@@ -49,6 +51,21 @@ class RandomUserAgentMiddleware(UserAgentMiddleware):
         if ua:
             request.headers.setdefault('User-Agent', ua)
         # return super().process_request(request, spider)
+
+# 添加代理中间件后期留用
+# class RandomProxy:
+#     def process_request(self, request, spider):
+#         proxy = random.choice(PROXY_LIST)
+#         if 'user_passwd' in proxy:
+#             # 对账号密码进行编码
+#             b64_up = b64encode(proxy['user_passwd'].encode())
+#             # 设置认证
+#             request.headers['Proxy-Authorization'] = 'Basic' + b64_up.decode()
+#             # 设置代理
+#             request.meta['proxy'] = proxy['ip_port']
+#         else:
+#             request.meta['proxy'] = proxy['ip_port']
+
 
 class GitscrapeSpiderMiddleware:
     # Not all methods need to be defined. If a method is not defined,
