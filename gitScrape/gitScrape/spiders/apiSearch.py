@@ -1,9 +1,10 @@
 import scrapy
 import itertools
 import json
-# import time # 如果需要休眠时打开
+import time # 如果需要休眠时打开
 import redis # 临时任务安置
 from collections import Counter
+from gitScrape.items import GitscrapeItem
 
 
 # 前置参数
@@ -19,14 +20,15 @@ TOP_CITIES = ['New York','Los Angeles','Chicago','Houston', 'Phoenix','Philadelp
               'Long Beach',  'Virginia Beach',  'Miami',  'Oakland',  'Minneapolis',  'Tulsa',  'Bakersfield',  'Wichita',  'Arlington']
 # 私人tocken,请勿copy
 headers = {
-    'Authorization': 'TOK:<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>',
+    'Authorization': 'token '+ "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",
     }
+headers2 = {
+    'Authorization': 'token '+ "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",
+}
 
 class ApisearchSpider(scrapy.Spider):
     name = 'apiSearch'
     allowed_domains = ['github.com']
-    # start_urls = ['http://github.com/']
-    hashname = 'UserInfo'
     r = redis.Redis(host='localhost', port=6379, db=1)
     # 测试redis 连接情况
     if not r.ping(): print(Exception, 'conncet redis failed')
@@ -37,7 +39,7 @@ class ApisearchSpider(scrapy.Spider):
         ll_perm = itertools.product(LANGUAGES, TOP_CITIES)
 
         for lng, loc in ll_perm:
-            for page in range(1, 10):
+            for page in range(1, 5):
                 url=f"https://{GITHUB_API_HOST}/search/users?q=type:user+language:%22{lng}%22+location:%22{loc}%22&page={page}"
                 yield scrapy.Request(url=url, headers=headers ,callback=self.parse)
 
@@ -46,25 +48,24 @@ class ApisearchSpider(scrapy.Spider):
         # 如果响应状态!=200,说明过量限流
         if response.status != 200:
             print(f'------Unauthourization, response status: {response.status}------\n')
+            time.sleep(600)
             return None
         
         # print(response.status) 测试用
         try:
             jsonresponse = json.loads(response.text)
             users = jsonresponse['items']
-            if users == 'error':
+            if users == 'error': 
                 print('user info parse failed')
                 return None
         except Exception as e:
-            print(e, response)
+            print(e, response)   
             return None
 
         for user in users:
             user_url = user['url']
             repo_url = user['repos_url']
 
-            # 向数据库中插入对应键值
-            # self.r.set(user_url,  repo_url)
             yield scrapy.Request(
                 url=repo_url, 
                 headers=headers,
@@ -82,7 +83,7 @@ class ApisearchSpider(scrapy.Spider):
             jsonresponse = json.loads(response.text)
             error = jsonresponse['message']
             print(error)
-            print('wait 10 min to restart')
+            # print('wait 10 min to restart')
             return None
 
         except:
@@ -103,10 +104,50 @@ class ApisearchSpider(scrapy.Spider):
 
             languages_details.append(details)
 
-            # 向数据库中输入数据
+            # 向数据库中输入数据(去重处理, set类型)
             user_url = response.meta['user_url']
-            self.r.lpush(self.hashname, response.url)
-            self.r.set(response.url,  user_url + "#" + json.dumps({'language_details': languages_details}))
-            yield {'language_details': languages_details}
+            if self.r.sadd('user_url',  user_url):
+                yield scrapy.Request(
+                    url=user_url, 
+                    headers=headers2,
+                    callback=self.UserInfo,
+                    meta={
+                        'language_count': json.dumps({'language_details': languages_details})
+                    })
+            else:
+                return None
+
+    def UserInfo(self, response):
+        language_details = response.meta['language_count']
+        try:
+            user = json.loads(response.text)
+        except Exception as e:
+            print(e, response)
+            user = None
+            return user
+            
+        if user:
+            item = {
+                'username' : user['login'],
+                'gitUrl' : user['html_url'],
+                'name' : user['name'],
+                'company' : user['company'],
+                'blog' : user['blog'],
+                'email' : user['email'],
+                'location' : user['location'],
+                'hireable' : user['hireable'],
+                'image' : user['avatar_url'],
+                'update_time' : user['updated_at'],
+                'followers' : user['followers'],
+                'following' : user['following'],
+                'languages_detail': language_details
+            }
+            # 过滤掉none
+            keys = list(filter(lambda x: True if item[x] else False, item))
+            yield {k :item[k] for k in keys}
+
+        else:
+            return None
+
         
 

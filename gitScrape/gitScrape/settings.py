@@ -15,7 +15,7 @@ PROXY_LIST = []
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-#USER_AGENT = 'gitScrape (+http://www.yourdomain.com)'
+# USER_AGENT = 'gitScrape (+http://www.yourdomain.com)'
 USER_AGENT_LIST = [ \
         'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36',
         "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 "
@@ -92,10 +92,10 @@ DEFAULT_REQUEST_HEADERS = {
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
-# DOWNLOADER_MIDDLEWARES = {
-#    # 'gitScrape.middlewares.GitscrapeDownloaderMiddleware': 543,
-#    'gitScrape.middlewares.RandomUserAgentMiddleware': 400,
-# }
+DOWNLOADER_MIDDLEWARES = {
+   # 'gitScrape.middlewares.GitscrapeDownloaderMiddleware': 543,
+   'gitScrape.middlewares.RandomUserAgentMiddleware': 400,
+}
 
 # Enable or disable extensions
 # See https://docs.scrapy.org/en/latest/topics/extensions.html

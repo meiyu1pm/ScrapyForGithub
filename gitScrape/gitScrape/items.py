@@ -9,6 +9,6 @@ import scrapy
 class GitscrapeItem(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
-    user_name = scrapy.Field()
-    possible_email = scrapy.Field()
+    # user_url = scrapy.Field()
+    # language_count = scrapy.Field()
     pass
