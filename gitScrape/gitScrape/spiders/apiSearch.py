@@ -20,10 +20,10 @@ TOP_CITIES = ['New York','Los Angeles','Chicago','Houston', 'Phoenix','Philadelp
               'Long Beach',  'Virginia Beach',  'Miami',  'Oakland',  'Minneapolis',  'Tulsa',  'Bakersfield',  'Wichita',  'Arlington']
 # 私人tocken,请勿copy
 headers = {
-    'Authorization': 'token '+ "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",
+    'Authorization': 'token '+ "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",
     }
 headers2 = {
-    'Authorization': 'token '+ "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",
+    'Authorization': 'token '+ "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",
 }
 
 class ApisearchSpider(scrapy.Spider):
