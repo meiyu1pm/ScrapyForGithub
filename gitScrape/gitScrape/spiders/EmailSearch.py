@@ -1,8 +1,6 @@
 import re
 import scrapy
-# from bs4 import BeautifulSoup
 from urllib.parse import urljoin
-# from gitScrape.items import GitscrapeItem
 import pandas as pd
 
 
@@ -10,8 +8,8 @@ PATH = '/Users/yumei/Desktop/ScrapyForGithub/gitScrape/task.csv'
 data = pd.read_csv(PATH)
 USER_NAME_LIST = data['username'].to_list()
 
-class GitSpiderSpider(scrapy.Spider):
-    name = 'git_spider'
+class EmailSearchSpider(scrapy.Spider):
+    name = 'email'
     allowed_domains = ['github.com']
     
     def start_requests(self):
@@ -70,9 +68,7 @@ class GitSpiderSpider(scrapy.Spider):
         except:
             results = pat.findall(response.text)
             print('error in parse_email')
-
-        # item['user_name'] = user_name
-        # item['possible_email'] = list(set(results))
+            
         yield {
             'user_name': user_name,
             'possible_email': list(set(results))
